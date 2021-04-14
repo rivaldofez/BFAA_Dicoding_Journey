@@ -2,20 +2,27 @@ package com.rivaldofez.cubihub
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.loopj.android.http.AsyncHttpClient
+import com.loopj.android.http.AsyncHttpResponseHandler
 import com.rivaldofez.cubihub.adapter.UsersAdapter
-import com.rivaldofez.cubihub.databinding.FragmentAboutBinding
 import com.rivaldofez.cubihub.databinding.FragmentUsersBinding
 import com.rivaldofez.cubihub.listener.OnItemClickListener
 import com.rivaldofez.cubihub.model.User
+import cz.msebera.android.httpclient.Header
 import org.json.JSONObject
 
 class UsersFragment : Fragment() {
+    companion object {
+        private val TAG = "UsersFragment"
+    }
+
     val layoutManager = LinearLayoutManager(activity)
     val addUserList: MutableList<User> = ArrayList()
     lateinit var userAdapter: UsersAdapter
@@ -35,6 +42,7 @@ class UsersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         action()
+        fetchFromAPI()
     }
 
     private fun action() {
@@ -84,5 +92,38 @@ class UsersFragment : Fragment() {
                 )
                 addUserList.add(user)
             }
+    }
+
+    private fun fetchFromAPI(){
+        val client = AsyncHttpClient()
+        val url = "https://api.github.com/search/users?q=avatar"
+        client.addHeader("Authorization", "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")
+        client.addHeader("User-Agent", "request")
+
+        client.get(url, object : AsyncHttpResponseHandler(){
+            override fun onSuccess(
+                statusCode: Int,
+                headers: Array<out Header>?,
+                responseBody: ByteArray?
+            ) {
+               val result = String(responseBody!!)
+                Log.d(TAG,result)
+            }
+
+            override fun onFailure(
+                statusCode: Int,
+                headers: Array<out Header>?,
+                responseBody: ByteArray?,
+                error: Throwable?
+            ) {
+                val errorMessage = when (statusCode) {
+                    401 -> "$statusCode : Bad Request"
+                    403 -> "$statusCode : Forbidden"
+                    404 -> "$statusCode : Not Found"
+                    else -> "$statusCode : ${error!!.message}"
+                }
+                Log.d(TAG,errorMessage)
+            }
+        })
     }
 }
