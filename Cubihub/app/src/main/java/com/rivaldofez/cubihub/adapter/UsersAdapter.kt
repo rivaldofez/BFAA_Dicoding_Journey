@@ -42,9 +42,9 @@ class UsersAdapter(val context: Context): RecyclerView.Adapter<UsersAdapter.User
                 binding.tvFullname.text = user.fullname
                 binding.tvUsername.text = user.username
                 binding.tvLocation.text = user.location
-                binding.tvRepository.text = user.num_repository.toString()
-                binding.tvFollower.text = user.num_follower.toString()
-                binding.tvLikes.text = user.num_likes.toString()
+//                binding.tvRepository.text = user.num_repository.toString()
+//                binding.tvFollower.text = user.num_follower.toString()
+//                binding.tvLikes.text = user.num_likes.toString()
 
                 val imageResource = context.resources.getIdentifier(user.avatar,null, context.packageName)
                 Glide.with(context).load(imageResource).into(binding.imgAvatar)
@@ -62,13 +62,13 @@ class UsersAdapter(val context: Context): RecyclerView.Adapter<UsersAdapter.User
                     onSelectedListener?.onItemClick(it, users[layoutPosition])
                 }
 
-                tvLikes.setOnClickListener {
-                    onSelectedListener?.onShowToast(it, layoutPosition)
-                }
-
-                tvFollower.setOnClickListener {
-                    onSelectedListener?.onShowToast(it, layoutPosition)
-                }
+//                tvLikes.setOnClickListener {
+//                    onSelectedListener?.onShowToast(it, layoutPosition)
+//                }
+//
+//                tvFollower.setOnClickListener {
+//                    onSelectedListener?.onShowToast(it, layoutPosition)
+//                }
             }
         }
     }
