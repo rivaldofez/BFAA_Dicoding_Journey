@@ -6,18 +6,21 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.rivaldofez.cubihub.databinding.ActivityUserDetailBinding
 import com.rivaldofez.cubihub.model.User
-import kotlinx.android.synthetic.main.activity_user_detail.*
 import java.lang.Exception
 
 class UserDetailActivity : AppCompatActivity() {
     lateinit var user:User;
+    private lateinit var binding:ActivityUserDetailBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_user_detail)
+        binding = ActivityUserDetailBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         initView()
-        btn_email.setOnClickListener {
+        binding.btnEmail.setOnClickListener {
             val emailSendIntent = Intent(Intent.ACTION_SEND)
             emailSendIntent.data = Uri.parse("mailto:")
             emailSendIntent.type ="text/plain"
@@ -31,7 +34,7 @@ class UserDetailActivity : AppCompatActivity() {
                 Toast.makeText(this, e.message , Toast.LENGTH_SHORT).show()
             }
         }
-        btn_share.setOnClickListener {
+        binding.btnShare.setOnClickListener {
             val shareIntent = Intent()
             shareIntent.action = Intent.ACTION_SEND
             shareIntent.putExtra(Intent.EXTRA_TEXT, user.fullname)
@@ -43,7 +46,7 @@ class UserDetailActivity : AppCompatActivity() {
             }
         }
 
-        btn_dial.setOnClickListener {
+        binding.btnDial.setOnClickListener {
             val dialPhoneIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${user.phone}"))
             startActivity(dialPhoneIntent)
         }
@@ -52,17 +55,17 @@ class UserDetailActivity : AppCompatActivity() {
     private fun initView() {
         user = intent.getParcelableExtra<User>("Key") as User
 
-        tv_fullname.text = user.fullname
-        tv_username.text = user.username
-        tv_address.text = user.address
-        tv_about_me.text = user.biography
-        tv_follower.text = user.num_follower.toString()
-        tv_following.text = user.num_following.toString()
-        tv_repository.text = "${user.num_repository.toString()} Repo"
+        binding.tvFullname.text = user.fullname
+        binding.tvUsername.text = user.username
+        binding.tvAddress.text = user.address
+        binding.tvAboutMe.text = user.biography
+        binding.tvFollower.text = user.num_follower.toString()
+        binding.tvFollowing.text = user.num_following.toString()
+        binding.tvRepository.text = "${user.num_repository.toString()} Repo"
 
         val imageResource = resources.getIdentifier(user.avatar,null, packageName)
-        Glide.with(applicationContext).load(imageResource).into(img_content)
+        Glide.with(applicationContext).load(imageResource).into(binding.imgContent)
 
-        btn_dial.setText(user.phone)
+        binding.btnDial.setText(user.phone)
     }
 }

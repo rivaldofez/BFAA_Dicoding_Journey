@@ -9,15 +9,17 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rivaldofez.cubihub.adapter.UsersAdapter
+import com.rivaldofez.cubihub.databinding.FragmentAboutBinding
+import com.rivaldofez.cubihub.databinding.FragmentUsersBinding
 import com.rivaldofez.cubihub.listener.OnItemClickListener
 import com.rivaldofez.cubihub.model.User
-import kotlinx.android.synthetic.main.fragment_users.*
 import org.json.JSONObject
 
 class UsersFragment : Fragment() {
     val layoutManager = LinearLayoutManager(activity)
     val addUserList: MutableList<User> = ArrayList()
     lateinit var userAdapter: UsersAdapter
+    private lateinit var binding: FragmentUsersBinding
 
 
     override fun onCreateView(
@@ -25,7 +27,8 @@ class UsersFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_users, container, false)
+        binding = FragmentUsersBinding.inflate(inflater,container,false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,9 +51,9 @@ class UsersFragment : Fragment() {
     }
 
     private fun initView() {
-        rv_users.layoutManager = layoutManager
+        binding.rvUsers.layoutManager = layoutManager
         userAdapter = UsersAdapter(activity!!)
-        rv_users.adapter = userAdapter
+        binding.rvUsers.adapter = userAdapter
         readAllData()
         userAdapter.setUsers(addUserList)
     }

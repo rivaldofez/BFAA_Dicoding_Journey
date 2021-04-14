@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.rivaldofez.cubihub.R
+import com.rivaldofez.cubihub.databinding.ItemUserBinding
 import com.rivaldofez.cubihub.listener.OnItemClickListener
 import com.rivaldofez.cubihub.model.User
 import de.hdodenhof.circleimageview.CircleImageView
@@ -17,7 +18,8 @@ class UsersAdapter(val context: Context): RecyclerView.Adapter<UsersAdapter.User
     private var onSelectedListener: OnItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
-        return UserViewHolder(LayoutInflater.from(context).inflate(R.layout.item_user, parent, false))
+        val binding = ItemUserBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return UserViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
@@ -34,42 +36,39 @@ class UsersAdapter(val context: Context): RecyclerView.Adapter<UsersAdapter.User
         notifyDataSetChanged()
     }
 
-    inner class UserViewHolder(item: View): RecyclerView.ViewHolder(item) {
-        val tvFullname : TextView = item.findViewById(R.id.tv_fullname)
-        val tvUsername : TextView = item.findViewById(R.id.tv_username)
-        val tvLocation : TextView = item.findViewById(R.id.tv_location)
-        val tvRepository : TextView = item.findViewById(R.id.tv_repository)
-        val tvFollower : TextView = item.findViewById(R.id.tv_follower)
-        val tvLikes : TextView = item.findViewById(R.id.tv_likes)
-        val imgAvatar : CircleImageView = item.findViewById(R.id.img_avatar)
-
+    inner class UserViewHolder(private val binding: ItemUserBinding): RecyclerView.ViewHolder(binding.root) {
         fun bindModel(user: User){
-            tvFullname.text = user.fullname
-            tvUsername.text = user.username
-            tvLocation.text = user.location
-            tvRepository.text = user.num_repository.toString()
-            tvFollower.text = user.num_follower.toString()
-            tvLikes.text = user.num_likes.toString()
+            with(binding){
+                binding.tvFullname.text = user.fullname
+                binding.tvUsername.text = user.username
+                binding.tvLocation.text = user.location
+                binding.tvRepository.text = user.num_repository.toString()
+                binding.tvFollower.text = user.num_follower.toString()
+                binding.tvLikes.text = user.num_likes.toString()
 
-            val imageResource = context.resources.getIdentifier(user.avatar,null, context.packageName)
-            Glide.with(context).load(imageResource).into(imgAvatar)
+                val imageResource = context.resources.getIdentifier(user.avatar,null, context.packageName)
+                Glide.with(context).load(imageResource).into(binding.imgAvatar)
+
+            }
         }
 
         init {
-            imgAvatar.setOnClickListener{
-                onSelectedListener?.onItemClick(it, users[layoutPosition])
-            }
+            with(binding){
+                imgAvatar.setOnClickListener{
+                    onSelectedListener?.onItemClick(it, users[layoutPosition])
+                }
 
-            tvFullname.setOnClickListener {
-                onSelectedListener?.onItemClick(it, users[layoutPosition])
-            }
+                tvFullname.setOnClickListener {
+                    onSelectedListener?.onItemClick(it, users[layoutPosition])
+                }
 
-            tvLikes.setOnClickListener {
-                onSelectedListener?.onShowToast(it, layoutPosition)
-            }
+                tvLikes.setOnClickListener {
+                    onSelectedListener?.onShowToast(it, layoutPosition)
+                }
 
-            tvFollower.setOnClickListener {
-                onSelectedListener?.onShowToast(it, layoutPosition)
+                tvFollower.setOnClickListener {
+                    onSelectedListener?.onShowToast(it, layoutPosition)
+                }
             }
         }
     }
@@ -78,3 +77,4 @@ class UsersAdapter(val context: Context): RecyclerView.Adapter<UsersAdapter.User
         this.onSelectedListener = onClickItemListener
     }
 }
+
