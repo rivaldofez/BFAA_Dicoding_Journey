@@ -55,8 +55,9 @@ class UserDetailActivity : AppCompatActivity() {
         detailPagerAdapter.username = username
 
         binding.viewPager.adapter = detailPagerAdapter
-        TabLayoutMediator(binding.tabs, binding.viewPager) { tab, position ->
+        TabLayoutMediator(binding.tabs, binding.viewPager, ) { tab, position ->
             tab.text = resources.getString(TAB_TITLES[position])
+
         }.attach()
     }
 

@@ -6,33 +6,27 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.loopj.android.http.AsyncHttpClient
-import com.loopj.android.http.AsyncHttpResponseHandler
 import com.rivaldofez.cubihub.adapter.FollowAdapter
 import com.rivaldofez.cubihub.adapter.UsersAdapter
 import com.rivaldofez.cubihub.databinding.FragmentFollowBinding
-import com.rivaldofez.cubihub.model.User
+import com.rivaldofez.cubihub.databinding.FragmentUsersBinding
 import com.rivaldofez.cubihub.viewmodel.FollowViewModel
 import com.rivaldofez.cubihub.viewmodel.SearchUserViewModel
-import cz.msebera.android.httpclient.Header
-import org.json.JSONArray
 
 class FollowFragment() : Fragment() {
     companion object {
         private val TAG = "FollowersFragment"
-        private val extra_username = "username"
-        private val extra_option = "option"
     }
+    val layoutManager = LinearLayoutManager(activity)
     var username:String? = null
     var option:String? = null
-    val layoutManager = LinearLayoutManager(activity)
-    private lateinit var binding: FragmentFollowBinding
     private lateinit var followAdapter : FollowAdapter
-    private lateinit var followViewModel: FollowViewModel
+    private lateinit var binding: FragmentFollowBinding
+    private lateinit var followerViewModel: FollowViewModel
+    private lateinit var followingViewModel: FollowViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,36 +40,34 @@ class FollowFragment() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        followViewModel = ViewModelProvider(activity as AppCompatActivity,ViewModelProvider.NewInstanceFactory()).get(FollowViewModel::class.java)
-
-        if(savedInstanceState != null){
-            val savedUsername = savedInstanceState.getString(extra_username)
-            val savedOption = savedInstanceState.getString(extra_option)
-            followViewModel.setFollowUser(savedUsername!!, savedOption!!)
-        }else{
-            followViewModel.setFollowUser(username!!, option!!)
+        if(savedInstanceState!=null){
+            username = savedInstanceState.getString("username")
+            option = savedInstanceState.getString("option")
         }
 
-        followAdapter = FollowAdapter(activity!!)
+        followAdapter = FollowAdapter(requireActivity())
         binding.rvFollowers.layoutManager = layoutManager
         binding.rvFollowers.adapter = followAdapter
 
-        followViewModel.getFollowUser().observe(activity as AppCompatActivity, {followItems ->
-            if(followItems!=null){
-                followAdapter.setFollows(followItems)
-                showLoading(false)
-            }
-        })
-    }
+        if(option!! == "followers"){
+            followerViewModel = ViewModelProvider(activity as AppCompatActivity, ViewModelProvider.NewInstanceFactory()).get(
+                option!!,FollowViewModel::class.java)
+            followerViewModel.setFollowUser(username!!,option!!)
 
-    override fun onResume() {
-        super.onResume()
-        followViewModel.getFollowUser().observe(activity as AppCompatActivity, {followItems ->
-            if(followItems!=null){
+            followerViewModel.getFollowUser().observe(viewLifecycleOwner, {followItems ->
                 followAdapter.setFollows(followItems)
-                showLoading(false)
-            }
-        })
+            })
+        }else{
+            followingViewModel = ViewModelProvider(activity as AppCompatActivity, ViewModelProvider.NewInstanceFactory()).get(
+                option!!,FollowViewModel::class.java)
+            followingViewModel.setFollowUser(username!!,option!!)
+
+            followingViewModel.getFollowUser().observe(viewLifecycleOwner, {followItems ->
+                followAdapter.setFollows(followItems)
+            })
+        }
+
+        Log.d("testing", "akal")
     }
 
     private fun showLoading(state: Boolean) {
@@ -88,8 +80,11 @@ class FollowFragment() : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(extra_username, username)
-        outState.putString(extra_option, option)
+        outState.putString("username", username)
+        outState.putString("option", option)
     }
 
+    override fun onStart() {
+        super.onStart()
+    }
 }

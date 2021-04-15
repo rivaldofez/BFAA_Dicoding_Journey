@@ -3,8 +3,10 @@ package com.rivaldofez.cubihub
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
+import android.opengl.Visibility
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.SearchView
@@ -24,7 +26,6 @@ class UsersFragment : Fragment() {
     }
 
     val layoutManager = LinearLayoutManager(activity)
-    val userDataSearch: MutableList<User> = ArrayList()
     private lateinit var userAdapter : UsersAdapter
     private lateinit var binding: FragmentUsersBinding
     private lateinit var searchUserViewModel: SearchUserViewModel
@@ -48,15 +49,33 @@ class UsersFragment : Fragment() {
 
         searchUserViewModel = ViewModelProvider(activity as AppCompatActivity, ViewModelProvider.NewInstanceFactory()).get(SearchUserViewModel::class.java)
 
+        binding.llNotFound.visibility = View.VISIBLE
+        binding.rvUsers.visibility = View.GONE
+        showLoading(false)
+
         userAdapter = UsersAdapter(requireActivity())
         binding.rvUsers.layoutManager = layoutManager
         binding.rvUsers.adapter = userAdapter
         action()
 
         searchUserViewModel.getSearchedUser().observe(viewLifecycleOwner, { userItems ->
-            if(userItems != null){
-                userAdapter.setUsers(userItems)
+            if(searchUserViewModel.errorState){
+                binding.rvUsers.visibility = View.GONE
+                binding.llNotFound.visibility = View.VISIBLE
                 showLoading(false)
+            }else{
+                if(userItems != null && userItems.size!=0 ){
+                    showLoading(true)
+                    userAdapter.setUsers(userItems)
+                    showLoading(false)
+                    binding.rvUsers.visibility = View.VISIBLE
+                    binding.llNotFound.visibility = View.GONE
+                    Log.d("tatas", userItems.size.toString())
+                }else{
+                    binding.rvUsers.visibility = View.GONE
+                    binding.llNotFound.visibility = View.VISIBLE
+                    showLoading(false)
+                }
             }
         })
 

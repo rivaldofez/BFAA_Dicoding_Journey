@@ -12,6 +12,7 @@ import org.json.JSONObject
 
 class SearchUserViewModel : ViewModel() {
     val listSearchedUser = MutableLiveData<ArrayList<User>>()
+    var errorState = false
 
     fun getSearchedUser() : LiveData<ArrayList<User>>{
         return listSearchedUser
@@ -22,7 +23,7 @@ class SearchUserViewModel : ViewModel() {
 
         val client = AsyncHttpClient()
         val url = "https://api.github.com/search/users?q=$query"
-        client.addHeader("Authorization", "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")
+        client.addHeader("Authorization", "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")
         client.addHeader("User-Agent", "request")
 
         client.get(url, object : AsyncHttpResponseHandler(){
@@ -48,6 +49,7 @@ class SearchUserViewModel : ViewModel() {
                         searchedItems.add(temp)
                     }
                     listSearchedUser.postValue(searchedItems)
+                    errorState = false
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -58,7 +60,7 @@ class SearchUserViewModel : ViewModel() {
                 responseBody: ByteArray?,
                 error: Throwable?
             ) {
-                Log.d("Test", error!!.message.toString())
+                errorState = true
             }
         })
     }

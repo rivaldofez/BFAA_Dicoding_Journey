@@ -24,7 +24,7 @@ class DetailUserViewModel : ViewModel() {
     fun setDetailUser(username: String){
         val client = AsyncHttpClient()
         val url = "https://api.github.com/users/$username"
-        client.addHeader("Authorization", "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")
+        client.addHeader("Authorization", "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")
         client.addHeader("User-Agent", "request")
 
         client.get(url, object : AsyncHttpResponseHandler(){

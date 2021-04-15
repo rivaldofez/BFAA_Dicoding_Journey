@@ -21,7 +21,6 @@ class FollowAdapter (val context: Context): RecyclerView.Adapter<FollowAdapter.F
         follows.addAll(data)
         notifyDataSetChanged()
     }
-
     override fun onBindViewHolder(holder: FollowViewHolder, position: Int) {
         holder.bindModel(follows[position])
     }
