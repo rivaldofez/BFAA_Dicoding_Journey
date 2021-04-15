@@ -43,7 +43,7 @@ class UserDetailActivity : AppCompatActivity() {
 
         detailUserViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(DetailUserViewModel::class.java)
 
-        detailUserViewModel.setDetailUser(username)
+        detailUserViewModel.setDetailUser(username,this)
         detailUserViewModel.getDetailUser().observe(this,{ detailUser ->
             if (detailUser != null){
                 setUserView(detailUser)

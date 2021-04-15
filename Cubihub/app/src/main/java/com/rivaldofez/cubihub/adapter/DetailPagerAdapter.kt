@@ -6,6 +6,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.rivaldofez.cubihub.FollowFragment
 
 class DetailPagerAdapter (activity: AppCompatActivity) : FragmentStateAdapter(activity) {
+    companion object{
+        val endFollowers = "followers"
+        val endFollowing = "following"
+    }
     var username:String? = null
 
     override fun getItemCount(): Int {
@@ -19,13 +23,13 @@ class DetailPagerAdapter (activity: AppCompatActivity) : FragmentStateAdapter(ac
             0 -> {
                 val fragmentFollower = FollowFragment()
                 fragmentFollower.username = username
-                fragmentFollower.option = "followers"
+                fragmentFollower.option = endFollowers
                 fragment = fragmentFollower
             }
             1 -> {
                 val fragmentFollowing = FollowFragment()
                 fragmentFollowing.username = username
-                fragmentFollowing.option = "following"
+                fragmentFollowing.option = endFollowing
                 fragment = fragmentFollowing
             }
         }

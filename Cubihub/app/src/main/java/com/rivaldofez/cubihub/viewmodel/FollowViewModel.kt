@@ -1,11 +1,13 @@
 package com.rivaldofez.cubihub.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.loopj.android.http.AsyncHttpClient
 import com.loopj.android.http.AsyncHttpResponseHandler
+import com.rivaldofez.cubihub.R
 import com.rivaldofez.cubihub.model.User
 import cz.msebera.android.httpclient.Header
 import org.json.JSONArray
@@ -18,12 +20,12 @@ class FollowViewModel: ViewModel() {
         return listFollowsUser
     }
 
-    fun setFollowUser(username: String, option: String){
+    fun setFollowUser(username: String, option: String, context: Context){
         val followersItems = ArrayList<User>()
 
         val client = AsyncHttpClient()
-        val url = "https://api.github.com/users/$username/$option"
-        client.addHeader("Authorization", "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")
+        val url = context.getString(R.string.follow_url,username,option)
+        client.addHeader("Authorization", context.getString(R.string.token))
         client.addHeader("User-Agent", "request")
 
         client.get(url, object : AsyncHttpResponseHandler(){
@@ -60,6 +62,7 @@ class FollowViewModel: ViewModel() {
                 error: Throwable?
             ) {
                 errorState = true
+                Log.d("Test", error!!.message.toString())
             }
         })
     }

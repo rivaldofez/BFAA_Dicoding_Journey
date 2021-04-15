@@ -1,6 +1,7 @@
 package com.rivaldofez.cubihub.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,7 +24,7 @@ class SearchUserViewModel : ViewModel() {
         val searchedItems = ArrayList<User>()
 
         val client = AsyncHttpClient()
-        val url = context.getString(R.string.search_url, query!!)
+        val url = context.getString(R.string.search_url, query)
         client.addHeader("Authorization", context.getString(R.string.token))
         client.addHeader("User-Agent", "request")
 
@@ -62,6 +63,7 @@ class SearchUserViewModel : ViewModel() {
                 error: Throwable?
             ) {
                 errorState = true
+                Log.d("Test", error!!.message.toString())
             }
         })
     }
