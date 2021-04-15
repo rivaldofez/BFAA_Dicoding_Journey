@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.SearchView
@@ -13,15 +12,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.loopj.android.http.AsyncHttpClient
-import com.loopj.android.http.AsyncHttpResponseHandler
 import com.rivaldofez.cubihub.adapter.UsersAdapter
 import com.rivaldofez.cubihub.databinding.FragmentUsersBinding
 import com.rivaldofez.cubihub.listener.OnItemClickListener
 import com.rivaldofez.cubihub.model.User
-import com.rivaldofez.cubihub.viewmodel.MainViewModel
-import cz.msebera.android.httpclient.Header
-import org.json.JSONObject
+import com.rivaldofez.cubihub.viewmodel.SearchUserViewModel
 
 class UsersFragment : Fragment() {
     companion object {
@@ -32,7 +27,7 @@ class UsersFragment : Fragment() {
     val userDataSearch: MutableList<User> = ArrayList()
     private lateinit var userAdapter : UsersAdapter
     private lateinit var binding: FragmentUsersBinding
-    private lateinit var mainViewModel: MainViewModel
+    private lateinit var searchUserViewModel: SearchUserViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,14 +46,14 @@ class UsersFragment : Fragment() {
         appCompatActivity.setSupportActionBar(binding.toolbarUser)
         appCompatActivity.supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        mainViewModel = ViewModelProvider(activity as AppCompatActivity, ViewModelProvider.NewInstanceFactory()).get(MainViewModel::class.java)
+        searchUserViewModel = ViewModelProvider(activity as AppCompatActivity, ViewModelProvider.NewInstanceFactory()).get(SearchUserViewModel::class.java)
 
         userAdapter = UsersAdapter(requireActivity())
         binding.rvUsers.layoutManager = layoutManager
         binding.rvUsers.adapter = userAdapter
         action()
 
-        mainViewModel.getSearchedUser().observe(viewLifecycleOwner, { userItems ->
+        searchUserViewModel.getSearchedUser().observe(viewLifecycleOwner, { userItems ->
             if(userItems != null){
                 userAdapter.setUsers(userItems)
                 showLoading(false)
@@ -71,7 +66,7 @@ class UsersFragment : Fragment() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 binding.progressBar.visibility = View.VISIBLE
-                mainViewModel.setSearchedUser(query!!)
+                searchUserViewModel.setSearchedUser(query!!)
                 return true
             }
 

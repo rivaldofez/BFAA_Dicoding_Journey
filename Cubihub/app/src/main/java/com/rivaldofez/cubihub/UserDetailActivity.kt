@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
@@ -16,6 +17,7 @@ import com.rivaldofez.cubihub.adapter.DetailPagerAdapter
 import com.rivaldofez.cubihub.databinding.ActivityUserDetailBinding
 import com.rivaldofez.cubihub.model.DetailUser
 import com.rivaldofez.cubihub.model.User
+import com.rivaldofez.cubihub.viewmodel.DetailUserViewModel
 import cz.msebera.android.httpclient.Header
 import org.json.JSONObject
 
@@ -28,8 +30,9 @@ class UserDetailActivity : AppCompatActivity() {
         )
     }
 
-    lateinit var username: String
+    private lateinit var username: String
     private lateinit var binding:ActivityUserDetailBinding
+    private lateinit var detailUserViewModel: DetailUserViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +40,16 @@ class UserDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initView()
-        fetchFromAPI()
+
+        detailUserViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(DetailUserViewModel::class.java)
+
+        detailUserViewModel.setDetailUser(username)
+        detailUserViewModel.getDetailUser().observe(this,{ detailUser ->
+            if (detailUser != null){
+                setUserView(detailUser)
+                showLoading(false)
+            }
+        })
 
         val detailPagerAdapter = DetailPagerAdapter(this)
         detailPagerAdapter.username = username
@@ -50,6 +62,17 @@ class UserDetailActivity : AppCompatActivity() {
 
     private fun initView() {
         username = intent.getStringExtra("Key")!!
+    }
+
+    private fun setUserView(detailUser : DetailUser){
+        binding.tvFullname.text = detailUser.name
+        binding.tvLocation.text = detailUser.location
+        binding.tvRepository.text = detailUser.public_repos.toString()
+        binding.tvFollower.text = detailUser.followers.toString()
+        binding.tvFollowing.text = detailUser.following.toString()
+        binding.tvUsername.text = detailUser.login
+
+        Glide.with(this).load(detailUser.avatar_url).into(binding.imgContent)
     }
 
     private fun fetchFromAPI(){
@@ -98,5 +121,13 @@ class UserDetailActivity : AppCompatActivity() {
                 Log.d("UserDetailTest",errorMessage)
             }
         })
+    }
+
+    private fun showLoading(state: Boolean) {
+        if (state) {
+            binding.progressBar.visibility = View.VISIBLE
+        } else {
+            binding.progressBar.visibility = View.GONE
+        }
     }
 }
