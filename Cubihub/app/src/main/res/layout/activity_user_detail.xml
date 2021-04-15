@@ -10,6 +10,7 @@
         android:id="@+id/appbar_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:fitsSystemWindows="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,10 +33,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="@font/amaranth_bold"
-                    android:text="Rivaldo Fernandes"
                     android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_25ssp" />
+                    android:textSize="@dimen/_25ssp"/>
 
 
                 <com.google.android.material.imageview.ShapeableImageView
@@ -56,7 +56,6 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:text="rivaldofez"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_18ssp"
                     android:textStyle="bold" />
@@ -79,7 +78,6 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginLeft="@dimen/_2sdp"
-                        android:text="Jakarta, Indonesia"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_10ssp" />
                 </LinearLayout>
@@ -102,7 +100,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:text="0"
                             android:textColor="@color/teal"
                             android:textSize="@dimen/_20ssp"
                             android:textStyle="bold" />
@@ -111,7 +108,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:text="Followers"
+                            android:text="@string/followers"
                             android:textColor="@color/black"
                             android:textSize="@dimen/_12sdp" />
 
@@ -135,7 +132,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:text="0"
                             android:textColor="@color/teal"
                             android:textSize="@dimen/_20ssp"
                             android:textStyle="bold" />
@@ -144,7 +140,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:text="Repository"
+                            android:text="@string/repository"
                             android:textColor="@color/black"
                             android:textSize="@dimen/_12sdp" />
                     </LinearLayout>
@@ -175,7 +171,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:text="Following"
+                            android:text="@string/following"
                             android:textColor="@color/black"
                             android:textSize="@dimen/_12sdp" />
                     </LinearLayout>

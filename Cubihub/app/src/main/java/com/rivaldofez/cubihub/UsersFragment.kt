@@ -4,14 +4,14 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.SearchView
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.loopj.android.http.AsyncHttpClient
 import com.loopj.android.http.AsyncHttpResponseHandler
@@ -19,6 +19,7 @@ import com.rivaldofez.cubihub.adapter.UsersAdapter
 import com.rivaldofez.cubihub.databinding.FragmentUsersBinding
 import com.rivaldofez.cubihub.listener.OnItemClickListener
 import com.rivaldofez.cubihub.model.User
+import com.rivaldofez.cubihub.viewmodel.MainViewModel
 import cz.msebera.android.httpclient.Header
 import org.json.JSONObject
 
@@ -31,7 +32,7 @@ class UsersFragment : Fragment() {
     val userDataSearch: MutableList<User> = ArrayList()
     private lateinit var userAdapter : UsersAdapter
     private lateinit var binding: FragmentUsersBinding
-
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,16 +40,30 @@ class UsersFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentUsersBinding.inflate(inflater,container,false)
+        setHasOptionsMenu(true);
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fetchFromAPI("rivaldofez")
+
+        val appCompatActivity = activity as AppCompatActivity
+        appCompatActivity.setSupportActionBar(binding.toolbarUser)
+        appCompatActivity.supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        mainViewModel = ViewModelProvider(activity as AppCompatActivity, ViewModelProvider.NewInstanceFactory()).get(MainViewModel::class.java)
+
         userAdapter = UsersAdapter(requireActivity())
         binding.rvUsers.layoutManager = layoutManager
         binding.rvUsers.adapter = userAdapter
         action()
+
+        mainViewModel.getSearchedUser().observe(viewLifecycleOwner, { userItems ->
+            if(userItems != null){
+                userAdapter.setUsers(userItems)
+                showLoading(false)
+            }
+        })
 
         val searchManager = requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
         binding.searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
@@ -56,7 +71,7 @@ class UsersFragment : Fragment() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 binding.progressBar.visibility = View.VISIBLE
-                fetchFromAPI(query!!)
+                mainViewModel.setSearchedUser(query!!)
                 return true
             }
 
@@ -80,58 +95,26 @@ class UsersFragment : Fragment() {
         })
     }
 
-    private fun fetchFromAPI(query: String){
-        val client = AsyncHttpClient()
-        val url = "https://api.github.com/search/users?q=$query"
-        client.addHeader("Authorization", "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")
-        client.addHeader("User-Agent", "request")
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.home_menu, menu)
+    }
 
-        client.get(url, object : AsyncHttpResponseHandler(){
-            override fun onSuccess(
-                statusCode: Int,
-                headers: Array<out Header>?,
-                responseBody: ByteArray?
-            ) {
-                binding.progressBar.visibility = View.INVISIBLE
-
-                val result = String(responseBody!!)
-                try {
-                    val responseObject = JSONObject(result)
-                    val item_users = responseObject.getJSONArray("items")
-                    userDataSearch.clear()
-
-                    for(i in 0 until item_users.length()){
-                        val item = item_users.getJSONObject(i)
-                        val temp = User(
-                                login = item.getString("login"),
-                                type = item.getString("type"),
-                                html_url = item.getString("html_url"),
-                                avatar_url = item.getString("avatar_url"),
-                                id = item.getInt("id"),
-                        )
-                        userDataSearch.add(temp)
-                    }
-                    userAdapter.setUsers(userDataSearch)
-                } catch (e: Exception) {
-                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
-                    e.printStackTrace()
-                }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId){
+            R.id.language -> {
+                val mIntent = Intent(Settings.ACTION_LOCALE_SETTINGS)
+                startActivity(mIntent)
             }
-            override fun onFailure(
-                statusCode: Int,
-                headers: Array<out Header>?,
-                responseBody: ByteArray?,
-                error: Throwable?
-            ) {
-                binding.progressBar.visibility = View.INVISIBLE
-                val errorMessage = when (statusCode) {
-                    401 -> "$statusCode : Bad Request"
-                    403 -> "$statusCode : Forbidden"
-                    404 -> "$statusCode : Not Found"
-                    else -> "$statusCode : ${error!!.message}"
-                }
-                Log.d(TAG,errorMessage)
-            }
-        })
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun showLoading(state: Boolean) {
+        if (state) {
+            binding.progressBar.visibility = View.VISIBLE
+        } else {
+            binding.progressBar.visibility = View.GONE
+        }
     }
 }

@@ -42,5 +42,4 @@
         android:indeterminate="true"
         android:indeterminateTint="@color/black" />
 
-
 </LinearLayout>

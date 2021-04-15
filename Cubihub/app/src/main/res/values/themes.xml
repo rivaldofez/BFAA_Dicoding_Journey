@@ -19,6 +19,13 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="Theme.Cubihub.Searchview">
+        <item name="android:textColorHint">@color/light_gray</item>
+        <item name="android:editTextColor">@color/black</item>
+        <item name="android:queryBackground">@android:color/transparent</item>
+        <item name="iconTint">@color/light_gray</item>
+    </style>
+
     <style name="RoundImageView">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">@dimen/_10sdp</item>

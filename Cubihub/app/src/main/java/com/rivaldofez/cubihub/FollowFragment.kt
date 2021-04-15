@@ -11,21 +11,21 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.loopj.android.http.AsyncHttpClient
 import com.loopj.android.http.AsyncHttpResponseHandler
 import com.rivaldofez.cubihub.adapter.UsersAdapter
-import com.rivaldofez.cubihub.databinding.FragmentFollowersBinding
+import com.rivaldofez.cubihub.databinding.FragmentFollowBinding
 import com.rivaldofez.cubihub.model.User
 import cz.msebera.android.httpclient.Header
 import org.json.JSONArray
 
-
-class FollowersFragment() : Fragment() {
+class FollowFragment() : Fragment() {
     companion object {
         private val TAG = "FollowersFragment"
     }
 
     var username:String? = null
+    var option:String? = null
     val layoutManager = LinearLayoutManager(activity)
     val userDataSearch: MutableList<User> = ArrayList()
-    private lateinit var binding: FragmentFollowersBinding
+    private lateinit var binding: FragmentFollowBinding
     private lateinit var userAdapter : UsersAdapter
 
     override fun onCreateView(
@@ -33,7 +33,7 @@ class FollowersFragment() : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentFollowersBinding.inflate(inflater,container,false)
+        binding = FragmentFollowBinding.inflate(inflater,container,false)
         return binding.root
     }
 
@@ -47,7 +47,7 @@ class FollowersFragment() : Fragment() {
 
     private fun fetchFromAPI(){
         val client = AsyncHttpClient()
-        val url = "https://api.github.com/users/$username/followers"
+        val url = "https://api.github.com/users/$username/$option"
         client.addHeader("Authorization", "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")
         client.addHeader("User-Agent", "request")
 
@@ -61,6 +61,7 @@ class FollowersFragment() : Fragment() {
                 val result = String(responseBody!!)
                 try {
                     val item_users = JSONArray(result)
+                    userDataSearch.clear()
                     for(i in 0 until item_users.length()){
                         val item = item_users.getJSONObject(i)
                         val temp = User(
@@ -95,6 +96,11 @@ class FollowersFragment() : Fragment() {
                 Log.d(TAG,errorMessage)
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchFromAPI()
     }
 
 }

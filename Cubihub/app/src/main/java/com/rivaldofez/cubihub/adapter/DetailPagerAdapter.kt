@@ -3,8 +3,7 @@ package com.rivaldofez.cubihub.adapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.rivaldofez.cubihub.FollowersFragment
-import com.rivaldofez.cubihub.FollowingFragment
+import com.rivaldofez.cubihub.FollowFragment
 
 class DetailPagerAdapter (activity: AppCompatActivity) : FragmentStateAdapter(activity) {
     var username:String? = null
@@ -18,13 +17,15 @@ class DetailPagerAdapter (activity: AppCompatActivity) : FragmentStateAdapter(ac
 
         when (position) {
             0 -> {
-                val fragmentFollower = FollowersFragment()
+                val fragmentFollower = FollowFragment()
                 fragmentFollower.username = username
+                fragmentFollower.option = "followers"
                 fragment = fragmentFollower
             }
             1 -> {
-                val fragmentFollowing = FollowingFragment()
+                val fragmentFollowing = FollowFragment()
                 fragmentFollowing.username = username
+                fragmentFollowing.option = "following"
                 fragment = fragmentFollowing
             }
         }

@@ -23,12 +23,11 @@ class UserDetailActivity : AppCompatActivity() {
     companion object {
         @StringRes
         private val TAB_TITLES = intArrayOf(
-            R.string.tab_text_1,
-            R.string.tab_text_2
+            R.string.tab_followers,
+            R.string.tab_following
         )
     }
 
-    lateinit var userSearch: User
     lateinit var username: String
     private lateinit var binding:ActivityUserDetailBinding
 
@@ -43,15 +42,10 @@ class UserDetailActivity : AppCompatActivity() {
         val detailPagerAdapter = DetailPagerAdapter(this)
         detailPagerAdapter.username = username
 
-        val viewPager: ViewPager2 = findViewById(R.id.view_pager)
-        viewPager.adapter = detailPagerAdapter
-
-        val tabs: TabLayout = findViewById(R.id.tabs)
-        TabLayoutMediator(tabs, viewPager) { tab, position ->
+        binding.viewPager.adapter = detailPagerAdapter
+        TabLayoutMediator(binding.tabs, binding.viewPager) { tab, position ->
             tab.text = resources.getString(TAB_TITLES[position])
         }.attach()
-        supportActionBar?.elevation = 0f
-
     }
 
     private fun initView() {

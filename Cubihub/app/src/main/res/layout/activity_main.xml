@@ -21,7 +21,7 @@
         android:id="@+id/bnav_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/deep_green"
+        android:background="@drawable/bg_bottom_navbar"
         app:itemIconTint="@color/icon_navigation"
         app:itemTextColor="@color/icon_navigation"
         app:labelVisibilityMode="labeled"

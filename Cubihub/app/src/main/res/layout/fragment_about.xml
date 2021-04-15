@@ -11,7 +11,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tentang Saya"
+        android:text="@string/about_me"
         android:textSize="@dimen/_30ssp"
         android:layout_marginBottom="@dimen/_30sdp"
         android:textColor="@color/black"/>
@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
-                android:text="Rivaldo Fernandes"
+                android:text="@string/profile_name"
                 android:textColor="@color/deep_green"
                 android:textSize="@dimen/_25ssp" />
 
@@ -48,11 +48,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_5sdp"
-                android:text="rivaldofez@gmail.com"
+                android:text="@string/profile_email"
                 android:textColor="@color/deep_maroon"
                 android:textSize="@dimen/_20ssp" />
-
-
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
