@@ -59,7 +59,6 @@ class DetailUserViewModel : ViewModel() {
                 error: Throwable?
             ) {
                 errorState = true
-                Log.d("Test", error!!.message.toString())
             }
         })
     }

@@ -25,8 +25,8 @@ class UserDetailActivity : AppCompatActivity() {
     companion object {
         @StringRes
         private val TAB_TITLES = intArrayOf(
-            R.string.tab_followers,
-            R.string.tab_following
+            R.string.followers,
+            R.string.following
         )
     }
 
@@ -43,7 +43,7 @@ class UserDetailActivity : AppCompatActivity() {
 
         detailUserViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(DetailUserViewModel::class.java)
 
-        detailUserViewModel.setDetailUser(username,this)
+        detailUserViewModel.setDetailUser(username, this@UserDetailActivity)
         detailUserViewModel.getDetailUser().observe(this,{ detailUser ->
             if (detailUser != null){
                 setUserView(detailUser)

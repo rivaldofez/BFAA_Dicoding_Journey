@@ -81,7 +81,7 @@ class UsersFragment : Fragment() {
 
         val searchManager = requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
         binding.searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
-        binding.searchView.queryHint = "Masukan Kata Pencarian"
+        binding.searchView.queryHint = context!!.getString(R.string.search_hint)
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 binding.progressBar.visibility = View.VISIBLE

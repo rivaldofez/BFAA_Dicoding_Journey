@@ -63,7 +63,6 @@ class SearchUserViewModel : ViewModel() {
                 error: Throwable?
             ) {
                 errorState = true
-                Log.d("Test", error!!.message.toString())
             }
         })
     }

@@ -16,7 +16,6 @@ class AboutFragment : Fragment() {
     ): View? {
         binding = FragmentAboutBinding.inflate(inflater,container,false)
         return binding.root
-        // Inflate the layout for this fragment
     }
 
 }

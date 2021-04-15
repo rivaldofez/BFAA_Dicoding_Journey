@@ -44,7 +44,7 @@
             android:background="@drawable/bg_searchview"
             android:iconifiedByDefault="false"
             android:queryBackground="@android:color/transparent"
-            android:queryHint="@string/search_hitn" />
+            android:queryHint="@string/search_hint" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout

@@ -1,7 +1,6 @@
 package com.rivaldofez.cubihub
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,17 +8,17 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.rivaldofez.cubihub.adapter.DetailPagerAdapter
 import com.rivaldofez.cubihub.adapter.FollowAdapter
-import com.rivaldofez.cubihub.adapter.UsersAdapter
 import com.rivaldofez.cubihub.databinding.FragmentFollowBinding
-import com.rivaldofez.cubihub.databinding.FragmentUsersBinding
 import com.rivaldofez.cubihub.viewmodel.FollowViewModel
-import com.rivaldofez.cubihub.viewmodel.SearchUserViewModel
 
 class FollowFragment() : Fragment() {
-    companion object {
-        private val TAG = "FollowersFragment"
+    companion object{
+        val KEY_USERNAME = "username"
+        val KEY_OPTION = "option"
     }
+
     val layoutManager = LinearLayoutManager(activity)
     var username:String? = null
     var option:String? = null
@@ -40,27 +39,29 @@ class FollowFragment() : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if(savedInstanceState!=null){
-            username = savedInstanceState.getString("username")
-            option = savedInstanceState.getString("option")
+            username = savedInstanceState.getString(KEY_USERNAME)
+            option = savedInstanceState.getString(KEY_OPTION)
         }
 
         followAdapter = FollowAdapter(requireActivity())
         binding.rvFollowers.layoutManager = layoutManager
         binding.rvFollowers.adapter = followAdapter
 
-        if(option!! == "followers"){
+        if(option!! == DetailPagerAdapter.endFollowers){
             followerViewModel = ViewModelProvider(activity as AppCompatActivity, ViewModelProvider.NewInstanceFactory()).get(
                 option!!,FollowViewModel::class.java)
             followerViewModel.setFollowUser(username!!,option!!,context!!)
 
             followerViewModel.getFollowUser().observe(viewLifecycleOwner, {followItems ->
                 if(followerViewModel.errorState){
-                    //error
+                    showLoading(false)
                 }else{
                     if(followItems != null && followItems.size!=0){
+                        showLoading(true)
                         followAdapter.setFollows(followItems)
+                        showLoading(false)
                     }else{
-                        //not found
+                        showLoading(false)
                     }
                 }
             })
@@ -71,12 +72,14 @@ class FollowFragment() : Fragment() {
 
             followingViewModel.getFollowUser().observe(viewLifecycleOwner, {followItems ->
                 if(followingViewModel.errorState){
-                    //error
+                    showLoading(false)
                 }else{
                     if(followItems != null && followItems.size!=0){
+                        showLoading(true)
                         followAdapter.setFollows(followItems)
+                        showLoading(false)
                     }else{
-                        //not found
+                        showLoading(false)
                     }
                 }
             })
@@ -93,8 +96,8 @@ class FollowFragment() : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("username", username)
-        outState.putString("option", option)
+        outState.putString(KEY_USERNAME, username)
+        outState.putString(KEY_OPTION, option)
     }
 
 }
