@@ -32,7 +32,6 @@ class FollowFragment() : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         binding = FragmentFollowBinding.inflate(inflater,container,false)
         return binding.root
     }
@@ -55,7 +54,15 @@ class FollowFragment() : Fragment() {
             followerViewModel.setFollowUser(username!!,option!!)
 
             followerViewModel.getFollowUser().observe(viewLifecycleOwner, {followItems ->
-                followAdapter.setFollows(followItems)
+                if(followerViewModel.errorState){
+                    //error
+                }else{
+                    if(followItems != null && followItems.size!=0){
+                        followAdapter.setFollows(followItems)
+                    }else{
+                        //not found
+                    }
+                }
             })
         }else{
             followingViewModel = ViewModelProvider(activity as AppCompatActivity, ViewModelProvider.NewInstanceFactory()).get(
@@ -63,11 +70,17 @@ class FollowFragment() : Fragment() {
             followingViewModel.setFollowUser(username!!,option!!)
 
             followingViewModel.getFollowUser().observe(viewLifecycleOwner, {followItems ->
-                followAdapter.setFollows(followItems)
+                if(followingViewModel.errorState){
+                    //error
+                }else{
+                    if(followItems != null && followItems.size!=0){
+                        followAdapter.setFollows(followItems)
+                    }else{
+                        //not found
+                    }
+                }
             })
         }
-
-        Log.d("testing", "akal")
     }
 
     private fun showLoading(state: Boolean) {
@@ -84,7 +97,4 @@ class FollowFragment() : Fragment() {
         outState.putString("option", option)
     }
 
-    override fun onStart() {
-        super.onStart()
-    }
 }

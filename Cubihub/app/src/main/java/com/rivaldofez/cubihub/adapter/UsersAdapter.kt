@@ -38,32 +38,15 @@ class UsersAdapter(val context: Context): RecyclerView.Adapter<UsersAdapter.User
                 binding.tvFullname.text = user.login
                 binding.tvUsername.text = user.type
                 binding.tvLocation.text = user.html_url
-//                binding.tvRepository.text = user.num_repository.toString()
-//                binding.tvFollower.text = user.num_follower.toString()
-//                binding.tvLikes.text = user.num_likes.toString()
-
                 Glide.with(context).load(user.avatar_url).into(binding.imgAvatar)
-
             }
         }
 
         init {
             with(binding){
-                imgAvatar.setOnClickListener{
+                cvUsers.setOnClickListener{
                     onSelectedListener?.onItemClick(it, users[layoutPosition])
                 }
-
-                tvFullname.setOnClickListener {
-                    onSelectedListener?.onItemClick(it, users[layoutPosition])
-                }
-
-//                tvLikes.setOnClickListener {
-//                    onSelectedListener?.onShowToast(it, layoutPosition)
-//                }
-//
-//                tvFollower.setOnClickListener {
-//                    onSelectedListener?.onShowToast(it, layoutPosition)
-//                }
             }
         }
     }

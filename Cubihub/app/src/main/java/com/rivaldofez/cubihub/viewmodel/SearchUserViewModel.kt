@@ -1,11 +1,12 @@
 package com.rivaldofez.cubihub.viewmodel
 
-import android.util.Log
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.loopj.android.http.AsyncHttpClient
 import com.loopj.android.http.AsyncHttpResponseHandler
+import com.rivaldofez.cubihub.R
 import com.rivaldofez.cubihub.model.User
 import cz.msebera.android.httpclient.Header
 import org.json.JSONObject
@@ -18,12 +19,12 @@ class SearchUserViewModel : ViewModel() {
         return listSearchedUser
     }
 
-    fun setSearchedUser(query: String){
+    fun setSearchedUser(query: String, context:Context){
         val searchedItems = ArrayList<User>()
 
         val client = AsyncHttpClient()
-        val url = "https://api.github.com/search/users?q=$query"
-        client.addHeader("Authorization", "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")
+        val url = context.getString(R.string.search_url, query!!)
+        client.addHeader("Authorization", context.getString(R.string.token))
         client.addHeader("User-Agent", "request")
 
         client.get(url, object : AsyncHttpResponseHandler(){

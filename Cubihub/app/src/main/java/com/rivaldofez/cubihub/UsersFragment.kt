@@ -67,10 +67,10 @@ class UsersFragment : Fragment() {
                 if(userItems != null && userItems.size!=0 ){
                     showLoading(true)
                     userAdapter.setUsers(userItems)
-                    showLoading(false)
                     binding.rvUsers.visibility = View.VISIBLE
                     binding.llNotFound.visibility = View.GONE
-                    Log.d("tatas", userItems.size.toString())
+                    showLoading(false)
+
                 }else{
                     binding.rvUsers.visibility = View.GONE
                     binding.llNotFound.visibility = View.VISIBLE
@@ -85,7 +85,8 @@ class UsersFragment : Fragment() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 binding.progressBar.visibility = View.VISIBLE
-                searchUserViewModel.setSearchedUser(query!!)
+                binding.llNotFound.visibility = View.GONE
+                searchUserViewModel.setSearchedUser(query!!, context!!)
                 return true
             }
 

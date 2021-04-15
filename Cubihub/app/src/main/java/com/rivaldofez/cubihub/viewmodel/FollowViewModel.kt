@@ -12,6 +12,7 @@ import org.json.JSONArray
 
 class FollowViewModel: ViewModel() {
     val listFollowsUser = MutableLiveData<ArrayList<User>>()
+    var errorState = false
 
     fun getFollowUser() : LiveData<ArrayList<User>> {
         return listFollowsUser
@@ -22,7 +23,7 @@ class FollowViewModel: ViewModel() {
 
         val client = AsyncHttpClient()
         val url = "https://api.github.com/users/$username/$option"
-        client.addHeader("Authorization", "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")
+        client.addHeader("Authorization", "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")
         client.addHeader("User-Agent", "request")
 
         client.get(url, object : AsyncHttpResponseHandler(){
@@ -47,6 +48,7 @@ class FollowViewModel: ViewModel() {
                         followersItems.add(temp)
                     }
                     listFollowsUser.postValue(followersItems)
+                    errorState = false
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -57,7 +59,7 @@ class FollowViewModel: ViewModel() {
                 responseBody: ByteArray?,
                 error: Throwable?
             ) {
-                Log.d("Test", error!!.message.toString())
+                errorState = true
             }
         })
     }
