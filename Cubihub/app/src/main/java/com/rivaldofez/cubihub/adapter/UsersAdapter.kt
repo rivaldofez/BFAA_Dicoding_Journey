@@ -2,16 +2,12 @@ package com.rivaldofez.cubihub.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.rivaldofez.cubihub.R
 import com.rivaldofez.cubihub.databinding.ItemUserBinding
 import com.rivaldofez.cubihub.listener.OnItemClickListener
 import com.rivaldofez.cubihub.model.User
-import de.hdodenhof.circleimageview.CircleImageView
 
 class UsersAdapter(val context: Context): RecyclerView.Adapter<UsersAdapter.UserViewHolder>() {
     private val users : MutableList<User> = mutableListOf()
@@ -30,7 +26,7 @@ class UsersAdapter(val context: Context): RecyclerView.Adapter<UsersAdapter.User
         return users.size
     }
 
-    fun setUsers(data: List<User>){
+    fun setUsers(data: MutableList<User>){
         users.clear()
         users.addAll(data)
         notifyDataSetChanged()
@@ -39,15 +35,14 @@ class UsersAdapter(val context: Context): RecyclerView.Adapter<UsersAdapter.User
     inner class UserViewHolder(private val binding: ItemUserBinding): RecyclerView.ViewHolder(binding.root) {
         fun bindModel(user: User){
             with(binding){
-                binding.tvFullname.text = user.fullname
-                binding.tvUsername.text = user.username
-                binding.tvLocation.text = user.location
+                binding.tvFullname.text = user.login
+                binding.tvUsername.text = user.type
+                binding.tvLocation.text = user.html_url
 //                binding.tvRepository.text = user.num_repository.toString()
 //                binding.tvFollower.text = user.num_follower.toString()
 //                binding.tvLikes.text = user.num_likes.toString()
 
-                val imageResource = context.resources.getIdentifier(user.avatar,null, context.packageName)
-                Glide.with(context).load(imageResource).into(binding.imgAvatar)
+                Glide.with(context).load(user.avatar_url).into(binding.imgAvatar)
 
             }
         }

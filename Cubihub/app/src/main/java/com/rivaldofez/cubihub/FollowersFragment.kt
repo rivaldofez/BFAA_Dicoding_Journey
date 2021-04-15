@@ -1,59 +1,100 @@
 package com.rivaldofez.cubihub
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.loopj.android.http.AsyncHttpClient
+import com.loopj.android.http.AsyncHttpResponseHandler
+import com.rivaldofez.cubihub.adapter.UsersAdapter
+import com.rivaldofez.cubihub.databinding.FragmentFollowersBinding
+import com.rivaldofez.cubihub.model.User
+import cz.msebera.android.httpclient.Header
+import org.json.JSONArray
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [FollowersFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class FollowersFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+class FollowersFragment() : Fragment() {
+    companion object {
+        private val TAG = "FollowersFragment"
     }
+
+    var username:String? = null
+    val layoutManager = LinearLayoutManager(activity)
+    val userDataSearch: MutableList<User> = ArrayList()
+    private lateinit var binding: FragmentFollowersBinding
+    private lateinit var userAdapter : UsersAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_followers, container, false)
+        binding = FragmentFollowersBinding.inflate(inflater,container,false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FollowersFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            FollowersFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        fetchFromAPI()
+        userAdapter = UsersAdapter(activity!!)
+        binding.rvFollowers.layoutManager = layoutManager
+        binding.rvFollowers.adapter = userAdapter
+    }
+
+    private fun fetchFromAPI(){
+        val client = AsyncHttpClient()
+        val url = "https://api.github.com/users/$username/followers"
+        client.addHeader("Authorization", "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")
+        client.addHeader("User-Agent", "request")
+
+        client.get(url, object : AsyncHttpResponseHandler(){
+            override fun onSuccess(
+                    statusCode: Int,
+                    headers: Array<out Header>?,
+                    responseBody: ByteArray?
+            ) {
+                binding.progressBar.visibility = View.INVISIBLE
+                val result = String(responseBody!!)
+                try {
+                    val item_users = JSONArray(result)
+                    for(i in 0 until item_users.length()){
+                        val item = item_users.getJSONObject(i)
+                        val temp = User(
+                                login = item.getString("login"),
+                                type = item.getString("type"),
+                                html_url = item.getString("html_url"),
+                                avatar_url = item.getString("avatar_url"),
+                                id = item.getInt("id"),
+                        )
+                        userDataSearch.add(temp)
+                    }
+                    userAdapter.setUsers(userDataSearch)
+                    Log.d(TAG,userDataSearch[0].login)
+                } catch (e: Exception) {
+                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                    e.printStackTrace()
                 }
             }
+            override fun onFailure(
+                    statusCode: Int,
+                    headers: Array<out Header>?,
+                    responseBody: ByteArray?,
+                    error: Throwable?
+            ) {
+                binding.progressBar.visibility = View.INVISIBLE
+                val errorMessage = when (statusCode) {
+                    401 -> "$statusCode : Bad Request"
+                    403 -> "$statusCode : Forbidden"
+                    404 -> "$statusCode : Not Found"
+                    else -> "$statusCode : ${error!!.message}"
+                }
+                Log.d(TAG,errorMessage)
+            }
+        })
     }
+
 }

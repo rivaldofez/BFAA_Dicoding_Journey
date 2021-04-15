@@ -1,5 +1,7 @@
 package com.rivaldofez.cubihub
 
+import android.app.SearchManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,7 +9,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.loopj.android.http.AsyncHttpClient
 import com.loopj.android.http.AsyncHttpResponseHandler
@@ -24,8 +28,8 @@ class UsersFragment : Fragment() {
     }
 
     val layoutManager = LinearLayoutManager(activity)
-    val addUserList: MutableList<User> = ArrayList()
-    lateinit var userAdapter: UsersAdapter
+    val userDataSearch: MutableList<User> = ArrayList()
+    private lateinit var userAdapter : UsersAdapter
     private lateinit var binding: FragmentUsersBinding
 
 
@@ -40,16 +44,34 @@ class UsersFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
+        fetchFromAPI("rivaldofez")
+        userAdapter = UsersAdapter(requireActivity())
+        binding.rvUsers.layoutManager = layoutManager
+        binding.rvUsers.adapter = userAdapter
         action()
-        fetchFromAPI()
+
+        val searchManager = requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        binding.searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
+        binding.searchView.queryHint = "Masukan Kata Pencarian"
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                binding.progressBar.visibility = View.VISIBLE
+                fetchFromAPI(query!!)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+        })
+
     }
 
     private fun action() {
         userAdapter.setOnClickItemListener(object : OnItemClickListener{
-            override fun onItemClick(item: View, user: User) {
+            override fun onItemClick(item: View, userSearch: User) {
                 val goToDetailActivity = Intent(context, UserDetailActivity::class.java)
-                goToDetailActivity.putExtra("Key", user)
+                goToDetailActivity.putExtra("Key", userSearch.login)
                 startActivity(goToDetailActivity)
             }
             override fun onShowToast(item: View, position: Int) {
@@ -58,45 +80,9 @@ class UsersFragment : Fragment() {
         })
     }
 
-    private fun initView() {
-        binding.rvUsers.layoutManager = layoutManager
-        userAdapter = UsersAdapter(activity!!)
-        binding.rvUsers.adapter = userAdapter
-        readAllData()
-        userAdapter.setUsers(addUserList)
-    }
-
-    private fun readAllData() {
-        val fileJSON:String = activity!!.applicationContext.assets.open("user_data.json").bufferedReader().use {
-            it.readText()
-        }
-
-        val jsonObject = JSONObject(fileJSON.substring(fileJSON.indexOf("{"), fileJSON.lastIndexOf("}") + 1))
-        val jsonArr = jsonObject.getJSONArray("users")
-
-            for(i in 0..jsonArr.length()-1){
-                var jsonObj = jsonArr.getJSONObject(i)
-                val user = User(
-                    fullname = jsonObj.getString("fullname"),
-                    username = jsonObj.getString("username"),
-                    email = jsonObj.getString("email"),
-                    address = jsonObj.getString("address"),
-                    location = jsonObj.getString("location"),
-                    phone = jsonObj.getString("phone"),
-                    biography = jsonObj.getString("biography"),
-                    avatar = jsonObj.getString("avatar"),
-                    num_follower = jsonObj.getString("num_follower").toInt(),
-                    num_following = jsonObj.getString("num_following").toInt(),
-                    num_likes = jsonObj.getString("num_likes").toInt(),
-                    num_repository = jsonObj.getString("num_repository").toInt()
-                )
-                addUserList.add(user)
-            }
-    }
-
-    private fun fetchFromAPI(){
+    private fun fetchFromAPI(query: String){
         val client = AsyncHttpClient()
-        val url = "https://api.github.com/search/users?q=avatar"
+        val url = "https://api.github.com/search/users?q=$query"
         client.addHeader("Authorization", "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")
         client.addHeader("User-Agent", "request")
 
@@ -106,16 +92,38 @@ class UsersFragment : Fragment() {
                 headers: Array<out Header>?,
                 responseBody: ByteArray?
             ) {
-               val result = String(responseBody!!)
-                Log.d(TAG,result)
-            }
+                binding.progressBar.visibility = View.INVISIBLE
 
+                val result = String(responseBody!!)
+                try {
+                    val responseObject = JSONObject(result)
+                    val item_users = responseObject.getJSONArray("items")
+                    userDataSearch.clear()
+
+                    for(i in 0 until item_users.length()){
+                        val item = item_users.getJSONObject(i)
+                        val temp = User(
+                                login = item.getString("login"),
+                                type = item.getString("type"),
+                                html_url = item.getString("html_url"),
+                                avatar_url = item.getString("avatar_url"),
+                                id = item.getInt("id"),
+                        )
+                        userDataSearch.add(temp)
+                    }
+                    userAdapter.setUsers(userDataSearch)
+                } catch (e: Exception) {
+                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                    e.printStackTrace()
+                }
+            }
             override fun onFailure(
                 statusCode: Int,
                 headers: Array<out Header>?,
                 responseBody: ByteArray?,
                 error: Throwable?
             ) {
+                binding.progressBar.visibility = View.INVISIBLE
                 val errorMessage = when (statusCode) {
                     401 -> "$statusCode : Bad Request"
                     403 -> "$statusCode : Forbidden"

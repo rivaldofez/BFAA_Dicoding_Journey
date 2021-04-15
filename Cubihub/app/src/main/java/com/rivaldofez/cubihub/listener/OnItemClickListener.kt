@@ -4,7 +4,7 @@ import android.view.View
 import com.rivaldofez.cubihub.model.User
 
 interface OnItemClickListener {
-    fun onItemClick(item: View, user:User)
+    fun onItemClick(item: View, userSearch: User)
 
     fun onShowToast(item: View, position: Int)
 }
